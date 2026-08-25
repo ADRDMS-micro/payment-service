@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  payment-service:
+    build:
+      context: ../../
+      dockerfile: backend/payment-service/Dockerfile
+    ports:
+      - "3003:3000"
+    depends_on:
+      - payment-db
+    environment:
+      - DB_HOST=payment-db
+      - DB_PORT=5432
+      - DB_USER=payment_user
+      - DB_PASS=Payment@123
+      - DB_NAME=payment_db
+      - KAFKA_BROKERS=kafka:29092
+    networks:
+      - saga_network
+  payment-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: payment_user
+      POSTGRES_PASSWORD: Payment@123
+      POSTGRES_DB: payment_db
+    ports:
+      - "5003:5432"
+    networks:
+      - saga_network
+networks:
+  saga_network:
+    external: true
